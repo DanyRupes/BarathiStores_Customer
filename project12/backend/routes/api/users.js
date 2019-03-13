@@ -96,14 +96,12 @@ router.post('/register', (req, res) => {
             //         if(err) {
             //             return next(err);
             //         }
-            //         console.log("Im in express session");
-             
+            //         console.log("Im in express session");    
             // });
-             
-              
            // res.redirect('/listcategory');
          })
      })(req,res,next);
+     
 //     console.log("Request received");
 
 //     const {errors, isValid} = validateLoginInput(req.body);

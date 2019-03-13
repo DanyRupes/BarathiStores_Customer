@@ -19,12 +19,14 @@ class CartItem extends React.Component{
         quans:0
     }
 
-    handleAddChange = async (productid) => {
+    handleAddChange = async (productid, sp) => {
         this.setState({quans: ++this.state.quans});
         let val = this.state.quans
+        let amount = val * sp;
         const ProductData = {
           pid : productid,
-          quantity : val
+          quantity : val,
+          amount : amount
         }
         console.log(ProductData)
         await this.props.addToCart(ProductData);
@@ -32,9 +34,12 @@ class CartItem extends React.Component{
   
       handleMinusChange = (productid) => {
         this.setState({quans: --this.state.quans});
+        let val = this.state.quans;
+        let amount = val * sp;
         const ProductData = {
           pid : productid,
-          quantity : this.state.quans
+          quantity : this.state.quans,
+          amount : amount
         }
         console.log(ProductData)
 
@@ -67,7 +72,7 @@ class CartItem extends React.Component{
                     <View style={{flexDirection:'row',paddingLeft:wp('38%')}}>
                         <View style={{flexDirection:'row',paddingLeft:wp('2%')}}>
                             {
-                                this.state.quans>0?<TouchableOpacity onPress={() =>this.handleMinusChange(p._id)}>
+                                this.state.quans>0?<TouchableOpacity onPress={() =>this.handleMinusChange(p._id, p.sellingprice)}>
                                 <Icon name="ios-remove-circle" size={27} />
                                 </TouchableOpacity>:<View/>
                             }
@@ -77,7 +82,7 @@ class CartItem extends React.Component{
                             <Text> {this.state.quans>0?this.state.quans:""} </Text>
                         </View>
 
-                        <TouchableOpacity onPress={() =>this.handleAddChange(p._id)}>
+                        <TouchableOpacity onPress={() =>this.handleAddChange(p._id, p.sellingprice)}>
                             <Icon name="ios-add-circle" size={27} />
                         </TouchableOpacity>
                     </View>

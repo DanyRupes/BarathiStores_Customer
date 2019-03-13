@@ -10,19 +10,19 @@ const passport = require('../../config');
 // Add items into cart
 
 
-router.get('/add-to-cart/:id', function(req, res, next) {
-    var   productId = req.params.id;
-    var cart = new Cart(req.session.cart ? req.session.cart : {});
+// router.get('/add-to-cart/:id', function(req, res, next) {
+//     var   productId = req.params.id;
+//     var cart = new Cart(req.session.cart ? req.session.cart : {});
   
-    Product.findById(productId, function(err, product) {
-      if (err) {
-        return res.status(400).json(err);
-      }
-      cart.add(product, product.id);
-      req.session.cart = cart;
-      res.json(cart);
-    });
-  });
+//     Product.findById(productId, function(err, product) {
+//       if (err) {
+//         return res.status(400).json(err);
+//       }
+//       cart.add(product, product.id);
+//       req.session.cart = cart;
+//       res.json(cart);
+//     });
+//   });
 
 
 router.post('/addtocart', (req,res,next) => {
@@ -78,7 +78,8 @@ router.post('/addtocart', (req,res,next) => {
                       console.log("come herre");
                         let products = [{
                             product:req.body.pid,
-                            quantity : req.body.quantity
+                            quantity : req.body.quantity,
+                            amount : req.body.amount
                         }]
                             User.findOneAndUpdate( {"_id":userid} ,{$addToSet : {"cart":products}},{ upsert : true}, (err, cart) => {
                                 if(err)
@@ -122,9 +123,15 @@ router.post('/addtocart', (req,res,next) => {
 
 //displaycart items
 router.get('/getcart', (req,res) => {
-  User.findOne({_id : req.user._id}, (err, cart) => {
+  User.findOne({_id : req.user}, (err, cart) => {
     if(err) res.status(400).json(err);
-    res.json(cart.cart);
+      cart.cart.forEach((u) => {
+        Product.findOne({_id : u.product}, (err, product) => {
+          if(err) res.send("Error in cart product retrieval");
+
+        })
+      })
+    //res.json(cart.cart);
   })
 })
 

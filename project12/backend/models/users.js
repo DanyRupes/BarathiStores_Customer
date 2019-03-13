@@ -8,7 +8,8 @@ const UserSchema = new Schema({
             type : mongoose.Schema.ObjectId,
             ref  : 'products'
         },
-        quantity : String
+        quantity : String,
+
     }],
     orders:[{
         o_products :[],
@@ -16,7 +17,6 @@ const UserSchema = new Schema({
         payment_id : {
             type : String
        },
-       
        updated : Date,
        created : {
             type : Date,

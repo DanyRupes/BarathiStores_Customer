@@ -3,12 +3,10 @@ const Order = require('../../models/orders');
 const router = express.Router();
 const mongoose = require('mongoose');
 const User = require('../../models/users');
-
+const Product = require('../../models/products')
 
 //Create order
-router.post('/addorder', (req,res) => {
-    
-    
+router.post('/addorder', (req,res) => { 
     // let products = [{
     //     product:req.body.pid,
     //     quantity : req.body.quantity
@@ -23,11 +21,13 @@ router.post('/addorder', (req,res) => {
         totalamount: 3000,
         payment_id : "pay1"
         };
-                // order.save((err,result) => {
+        
+        // order.save((err,result) => {
         //     if(err)
         //         return res.status(400).json(err);
         //     res.json(result);
         // });
+        
         User.findOneAndUpdate( {"_id":userid} ,{$addToSet : {
             "orders" : neworder
         }},{ upsert : true}, (err, cart) => {
@@ -38,34 +38,32 @@ router.post('/addorder', (req,res) => {
                 if(err) res.json(err);
                 res.json(removecart);
             })
-            
-
         });
-
-    })
-    
-
-    
+    })   
 });
 
 //Admin order route
 
-router.post('/adminorder', (req,res) => {
-    User.findOne(req.body.mobilenumber).then((out) => {
+router.post('/placeorder', (req,res) => {
+    var userid = mongoose.Types.ObjectId(req.body.user);
+    User.findOne(userid).then((out) => {
         console.log(out);
         if(!out) res.json("User id not found");
-            
+            console.log("///////////////////"+out.cart);
+        out.cart.product
+        
         let neworder = new Order({
-            orders :req.body.cart,
+            orders :out.cart,
             totalamount: req.body.totalamount,
-            customer_id : req.user,
+            customer_id : userid,
             payment_id : "pay1"
             });
-                    neworder.save((err,result) => {
+            neworder.save((err,result) => {
                 if(err)
                     return res.status(400).json(err);
                 res.json(result);
             });
+
             // User.findOneAndUpdate( {"mobilenumber": req.body.mobilenumber} ,{$addToSet : {
             //     "orders" : neworder
             // }},{ upsert : true}, (err, cart) => {
@@ -76,19 +74,30 @@ router.post('/adminorder', (req,res) => {
             //         if(err) res.json(err);
             //         res.json(removecart);
             //     })
-                
-    
             // });
+
         });
-        
 })
 
 //searchproduct, mobilenumber
 
+//show My orders
+router.get('/myorders', (req,res) => {
+    Order.find(req.user).sort('-created').exec((err,myorder) => {
+        if(err) res.status(400).json(err);
+        res.json(myorder);
+    })
+})
 
+//List all orders
+router.get('/allorders', (req,res) => {
+    Order.find({}).sort('-created').exec((err, allorders) => {
+        if(err) res.status(400).json(err);
+        res.json(allorders);
+    })
+})
 
 //list order by user
-
 router.get('/listorders/:id', (req,res)=> {
     Order.find(req.params.id).sort('-created').exec((err,orders) => {
         if(err)

@@ -115,6 +115,7 @@ app.use("/api/categories",   categories);
 //app.use("/api/subcategory", subcategory);
 app.use("/api/products", products);
 app.use("/api/cartitems", cartitems);
+app.use("/api/orders", orders);
 
 
 

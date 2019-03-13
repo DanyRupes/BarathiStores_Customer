@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const cartItem = require('./cartitems').schema;
+//const cartItem = require('./cartitems').schema;
 
 const OrderSchema = new Schema({
-     orders : [cartItem],
+     orders : [],
      totalamount: Number,
      customer_id : {
           type : mongoose.Schema.ObjectId,
