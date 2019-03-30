@@ -19,8 +19,8 @@ const storage = multer.diskStorage({
 
 
 //Add new category
-router.post('/addcategory',upload.any(), (req,res) => {
-   // const {errors, isValid} = validateCategoryInput(req.body);
+router.post('/addcategory',upload.single('image'), (req,res) => {
+    // const {errors, isValid} = validateCategoryInput(req.body);
 
     // if(!isValid){
     //     return res.status(400).json(errors);
@@ -37,27 +37,30 @@ router.post('/addcategory',upload.any(), (req,res) => {
     if(!req.body._id){
         Category.findOne({ categoryname : req.body.categoryname}).then(category => {
             if(category){
-                return res.status(400).json({ categoryname : "Category already exists"});
+              //  insert
+                var path = req.files[0].path;
+                var imageName = req.files[0].originalname;
+                var imagepath = {};
+        
+                    imagepath['path'] = path;
+                    imagepath['originalname'] = imageName;
+                    req.body.image = path;
+                Category.findByIdAndUpdate(req.body._id, req.body, (err,category) => {
+                    if(err) return res.status(400).json(err);
+                    res.json(category);
+                });
             }
-    newCategory.save()
-    .then(category => res.json(category))
-    .catch(err => console.log(err));
-});
-    }
-    // Update Category
-    else{
-        var path = req.files[0].path;
-        var imageName = req.files[0].originalname;
-        var imagepath = {};
-
-            imagepath['path'] = path;
-            imagepath['originalname'] = imageName;
-            req.body.image = path;
-        Category.findByIdAndUpdate(req.body._id, req.body, (err,category) => {
-            if(err) return res.status(400).json(err);
-            res.json(category);
+            else{
+                newCategory.save()
+                .then(category => res.json(category))
+                .catch(err => console.log(err));
+            }
         });
     }
+    // Update Category
+   
+        
+
 });
 //Edit category
 router.get('/editcategory/:id', (req,res) => {

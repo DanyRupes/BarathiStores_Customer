@@ -14,7 +14,7 @@ export default combineReducers({
     displayproducts : productDisplayReducers,
     displaycategory : categoryDisplayReducers,
     displaysubcategory : subCategoryDisplayReducers,
-    displaycart : cartDisplayReducers
+    displaycart : cartDisplayReducers,
   //  searchproducts : adminCartReducers
     
 });

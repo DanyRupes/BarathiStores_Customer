@@ -5,9 +5,12 @@ import { PRODUCT_DISPLAY, GET_ERRORS, CATEGORY_DISPLAY, SUBCATEGORY_DISPLAY } fr
 
 export const displayCategories = () => dispatch => {
     console.log("in redux category");
-    axios.get('http://192.168.29.137:3000/api/categories/listcategory').then(
+    axios.get('http://192.168.29.229:3000/api/categories/listcategory',{headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }}).then(
         res => {
-            console.log(" I recieved - "+res.data);
+            //console.log(" I recieved - "+res.data);
             dispatch({
                 type : CATEGORY_DISPLAY,
                 payload : res.data

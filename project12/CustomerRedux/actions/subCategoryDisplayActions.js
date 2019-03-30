@@ -6,11 +6,10 @@ import { PRODUCT_DISPLAY, GET_ERRORS, CATEGORY_DISPLAY, SUBCATEGORY_DISPLAY } fr
 
 export const displaySubCategories = (categoryid) => dispatch => {
     console.log("Category Id is : "+categoryid);
-    axios.get('http://192.168.29.137:3000/api/categories/listsubcategoryoncategory/'+categoryid,{
-        headers: {
-         'Content-Type':'application/json'
-        }
-       }).then(
+    axios.get('http://192.168.29.229:3000/api/categories/listsubcategoryoncategory/'+categoryid,{headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }}).then(
         res => {
             dispatch({
                 type : SUBCATEGORY_DISPLAY,

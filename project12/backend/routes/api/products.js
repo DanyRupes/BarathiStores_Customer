@@ -17,40 +17,54 @@ const storage = multer.diskStorage({
       callback(null, file.originalname);
   }});
   
-  const upload = multer({ storage: storage });
+  const upload = multer({ storage: storage, limits:{ fileSize : 102400} });
 
 
 
 //Add new Product
 router.post('/addproduct',upload.any(), (req,res) => {
 
-    var path = "public\\vcm_s_kf_m160_160x90.jpg";
-   
-    const newProduct = new Product({
-        subcategory : req.body.subcategory,
-        productname : req.body.productname,
-        displayorder : req.body.displayorder,
-        searchkey : req.body.searchkey,
-        originalprice : req.body.originalprice,
-        sellingprice : req.body.sellingprice,
-        purchaseprice : req.body.purchaseprice,
-        displayoffer : req.body.displayoffer,
-        hsncode : req.body.hsncode,
-        gstpercent : req.body.gstpercent,
-        popularproduct : req.body.popularproduct,
-        popularorder : req.body.popularorder,
-        offerproduct : req.body.offerproduct,
-        offerorder : req.body.offerorder,
-        hideproduct : req.body.hideproduct,
-        availability : req.body.availability,
-        description : req.body.description,
-        image : path
-    });
-    if(req.body._id === ''){
-        Product.findOne({productname}).then(products => {
-            if(products)
-                return res.status(400).json("Product already exists");
+        
+        Product.findOne({"productname" :req.body.productname}).then(products => {
+            if(products){
+                //Update product
+            var path = req.files[0].path;
+            var imageName = req.files[0].originalname;
+            var imagepath = {};
+    
+                imagepath['path'] = path;
+                imagepath['originalname'] = imageName;
+                req.body.image = path;
+            Product.findByIdAndUpdate(req.body._id, req.body, (err, product) => {
+                if( err ) return res.status(400).json(err);
+                res.json(product);
+            })
+        }
             else{
+
+                var path = "public\\vcm_s_kf_m160_160x90.jpg";
+   
+                const newProduct = new Product({
+                    subcategory : req.body.subcategory,
+                    productname : req.body.productname,
+                    displayorder : req.body.displayorder,
+                    searchkey : req.body.searchkey,
+                    originalprice : req.body.originalprice,
+                    sellingprice : req.body.sellingprice,
+                    purchaseprice : req.body.purchaseprice,
+                    displayoffer : req.body.displayoffer,
+                    hsncode : req.body.hsncode,
+                    gstpercent : req.body.gstpercent,
+                    popularproduct : req.body.popularproduct,
+                    popularorder : req.body.popularorder,
+                    offerproduct : req.body.offerproduct,
+                    offerorder : req.body.offerorder,
+                    hideproduct : req.body.hideproduct,
+                    availability : req.body.availability,
+                    description : req.body.description,
+                    image : path
+                });
+            
             newProduct
             .save()
             .then(product => res.json(product))
@@ -58,21 +72,7 @@ router.post('/addproduct',upload.any(), (req,res) => {
             }
         })
     
-    }
-    //Update product
-    else{
-        var path = req.files[0].path;
-        var imageName = req.files[0].originalname;
-        var imagepath = {};
-
-            imagepath['path'] = path;
-            imagepath['originalname'] = imageName;
-            req.body.image = path;
-        Product.findByIdAndUpdate(req.body._id, req.body, (err, product) => {
-            if( err ) return res.status(400).json(err);
-            res.json(product);
-        } );
-    }
+    
 });
 
 //Edit product
@@ -156,6 +156,14 @@ router.get('/listproductonsubcategory/:id', (req,res) => {
         if(err) res.status(400).json(err);
         res.json(products);
     });
+})
+
+//Offer Products
+router.get('/offerproducts', (req,res) => {
+    Product.find({'offerproduct' : "Yes", 'displayoffer': "Yes"}, (err,offers) => {
+        if( err ) res.status(400).json(err);
+        res.json(offers);
+    })
 })
 
 //Delete Product

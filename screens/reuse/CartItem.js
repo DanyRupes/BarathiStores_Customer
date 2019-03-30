@@ -1,13 +1,16 @@
 
-import React from 'react';
-
-import {View,StyleSheet,SafeAreaView,ScrollView,Dimensions,TouchableOpacity, Text} from "react-native";
-import { Container, Content, List, ListItem, Left, Body, Thumbnail,Button} from 'native-base';
-import Icon from 'react-native-vector-icons/Ionicons'
-import {Card} from 'react-native-elements'
-import {  widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen'
-import {addToCart} from '../../project12/CustomerRedux/actions/cartDisplayActions';
+import React, { Component } from 'react';
+import { View, Image, Text, AsyncStorage, ScrollView,TouchableOpacity } from 'react-native'
+import {Button,SearchBar} from 'react-native-elements'
+import {  widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import {connect} from 'react-redux';
+import { Avatar, Card, Title, Paragraph , Divider } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/Ionicons'
+import { Footer } from 'native-base';
+import cart from '../cart-helper'
+import {addToCart,placeOrder,getCart,minusCart} from '../../project12/CustomerRedux/actions/cartDisplayActions';
+
+// import {} from '../../project12/CustomerRedux/actions/cartDisplayActions';
 
 
 class CartItem extends React.Component{
@@ -16,79 +19,92 @@ class CartItem extends React.Component{
         this.handleAddChange = this.handleAddChange.bind(this)
     }
     state={
-        quans:0
+        cartItems : [],
+        updateItem:true,
+        total_quantity : 0,
+    }
+    componentDidMount(){
+     console.log("Cart Item------------")
     }
 
-    handleAddChange = async (productid, sp) => {
-        this.setState({quans: ++this.state.quans});
-        let val = this.state.quans
-        let amount = val * sp;
-        const ProductData = {
-          pid : productid,
-          quantity : val,
-          amount : amount
-        }
-        console.log(ProductData)
-        await this.props.addToCart(ProductData);
+    handleAddChange = async (p) => {
+      const  {_id,sellingprice,productname} = p
+      this.setState({total_quantity:this.state.total_quantity++})
+      this.props.addToCart({_id,sellingprice,productname, quantity:this.state.total_quantity});  
+      
       }
   
-      handleMinusChange = (productid) => {
-        this.setState({quans: --this.state.quans});
-        let val = this.state.quans;
-        let amount = val * sp;
-        const ProductData = {
-          pid : productid,
-          quantity : this.state.quans,
-          amount : amount
-        }
-        console.log(ProductData)
+      handleMinusChange = (p) => {
+        // const  {_id} = p
+        this.props.minusCart(p._id);
+     
+        this.setState({total_quantity:this.state.total_quantity-1})
 
-        this.props.addToCart(ProductData);
       }
 
 
     render(){
         const p = this.props.item
         return(
-            <ListItem avatar>
-              
-              <Left>
-                <Thumbnail square source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgub0Qx-cwzk4spmt3OnZNnAKRkHk5AVytmuaG8Ef2gDDlXROaZw' }} />
-              </Left>
-              
-              <Body>
-                <Text>{p.productname}</Text>
+            <Card key = {p._id}>
+                
+            <View style={{flexDirection:'row',justifyContent:'space-between',padding:'3%'}}>
+                <View>
+            <Card.Content>
+            <Title>{p.productname}</Title>
+            </Card.Content>
+            </View>
+            <View>
+        <Card.Content>
+    
+        <Card.Cover style={{height:hp('10%'),width:wp('20%')}}
+        source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8sniIrfh6AdD0wr_7qjxUGOVRZdlmcXcD6LYCCoNfDwfLIK2n' }} />
+      
+          
+      
+    </Card.Content>
+    </View>
+    </View>
+    <View style={{flexDirection:'row',justifyContent:'space-between',padding:'3%'}}>
+    <View>
+    <Card.Content>
+    <Title> Rs. {p.sellingprice} </Title>
+    </Card.Content>
+    </View>
+    <View>
+        <Card.Content>
+    <View style={{flexDirection:'row',paddingLeft:wp('38%')}}>
+    <View >
+     {p.quantity?
+     <TouchableOpacity onPress={() =>this.handleMinusChange(p)}>
+     <Icon name="ios-remove-circle" size={27} />
+     </TouchableOpacity>:<Text></Text>}
+    </View>
+    <View >
+      <Text style={{paddingLeft:wp('3%'),paddingTop:hp('0.4%')}}> { p.quantity ?  p.quantity : '' }</Text>
+     </View>
+     <TouchableOpacity onPress={() => this.handleAddChange(p)}>
+     <Icon name="ios-add-circle" size={27} />
+   </TouchableOpacity>
+    </View>
+    </Card.Content>
+     </View>
+     
+     </View>
+    
+    <Divider/>
 
-                <View style={{flexDirection:'row'}}>
-                    <Text style={{ textDecorationLine: 'line-through' }}>Rs.{p.originalprice}</Text>
-                    <Text>Rs.{p.sellingprice}</Text>
-            
-                </View>
-                <View style={{flexDirection:'row',   minWidth:wp('8%')}}>
-                     <Icon name="ios-information-circle" size={27} />
-                    <View style={{paddingLeft:wp('4%')}}>
-                        <Icon name="ios-heart-empty" size={27} />
-                    </View>
-                    <View style={{flexDirection:'row',paddingLeft:wp('38%')}}>
-                        <View style={{flexDirection:'row',paddingLeft:wp('2%')}}>
-                            {
-                                this.state.quans>0?<TouchableOpacity onPress={() =>this.handleMinusChange(p._id, p.sellingprice)}>
-                                <Icon name="ios-remove-circle" size={27} />
-                                </TouchableOpacity>:<View/>
-                            }
-                        </View>
-                    
-                        <View style={{flexDirection:'row',paddingLeft:wp('2%'),paddingTop:hp('0.4%')}}>
-                            <Text> {this.state.quans>0?this.state.quans:""} </Text>
-                        </View>
+    <View style={{flexDirection:'row',justifyContent:'space-evenly'}}>
+                    <Button style={{alignSelf:'flex-start'}}
+                    title="Save For Later"
+                    type="clear"/>
+                    <Divider/>
+                    <Button style={{alignSelf:'flex-end'}}
+                    title="Remove"
+                    type="clear"/>
+            </View>
 
-                        <TouchableOpacity onPress={() =>this.handleAddChange(p._id, p.sellingprice)}>
-                            <Icon name="ios-add-circle" size={27} />
-                        </TouchableOpacity>
-                    </View>
-                </View>
-              </Body>
-          </ListItem>
+</Card>
         )
     }
 }
@@ -96,4 +112,4 @@ const mapStateToProps = (state) => ({
    
    });
 
-export default connect(mapStateToProps, {addToCart})(CartItem);
+export default connect(mapStateToProps, {addToCart,minusCart})(CartItem);

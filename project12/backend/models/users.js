@@ -3,14 +3,20 @@ const Schema = mongoose.Schema;
 const jwt = require('jsonwebtoken');
 
 const UserSchema = new Schema({
-    cart :[{
-        product:{
+    cart :{
+    items :[{
+        productid:{
             type : mongoose.Schema.ObjectId,
             ref  : 'products'
         },
+        productname : String,
+        sellingprice : Number,
         quantity : String,
+        amount : Number
 
     }],
+    totalamount : Number
+},
     orders:[{
         o_products :[],
         totalamount: Number,

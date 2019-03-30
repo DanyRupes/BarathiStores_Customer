@@ -9,7 +9,8 @@ import {displaySubCategories} from '../project12/CustomerRedux/actions/subCatego
 import {displayProducts} from '../project12/CustomerRedux/actions/productDisplayActions';
 import {addToCart} from '../project12/CustomerRedux/actions/cartDisplayActions';
 import {connect} from 'react-redux';
-import CartItem from './reuse/CartItem'
+import cart, {} from './cart-helper'
+import ProdItem from './reuse/ProdItem'
 const { height, width } = Dimensions.get('window')
 
 class ProductScreen extends React.Component {
@@ -27,116 +28,34 @@ class ProductScreen extends React.Component {
    //  console.log(this.props.categoryid);
   // await this.displayproducts;
    
-     console.log(" Category in product is -"+this.props.navigation.state.params.categoryid);
+    //  console.log(" Category in product is -"+this.props.navigation.state.params.categoryid);
      await this.props.displaySubCategories(this.props.navigation.state.params.categoryid);
      
    }
    async handleSubCategoryChange (subcategoryid) {
 
         await this.props.displayProducts(subcategoryid)
-    //     setTimeout(() =>{
-    //    return this.handleProducts()
-    //     console.log("ok--------------"+this.state.isClicked);
-    //     }, 3000);
-    // this.handleProducts();
-   //console.log(this.props);
-   //setTimeout(this.handleProducts.bind(this), 5000);
-      
-    }
-    
-
-//     handleProducts(){
-//      // this.setState({isClicked1:true});
-//   //console.log(event);
-//  // console.log("I'm in handle products");
-//       return (
-//         <View style={{}}>
-//         <Text>Hai</Text>
-//         {this.props.displayproducts.product.map((p) =>(
-//           <List key={p._id}>
-//           <ListItem avatar>
-//             <Left>
-//               <Thumbnail square source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgub0Qx-cwzk4spmt3OnZNnAKRkHk5AVytmuaG8Ef2gDDlXROaZw' }} />
-//             </Left>
-//             <Body>
-//               <Text>{p.productname}</Text>
-//               <View style={{flexDirection:'row'}}>
-//               <Text style={{ textDecorationLine: 'line-through' }}>Rs.{p.originalprice}</Text>
-//               <Text>Rs.{sellingprice}</Text>
-           
-//               </View>
-//               <View style={{flexDirection:'row',   minWidth:wp('8%')}}>
-//               <Icon name="ios-information-circle" size={27} />
-//               <View style={{paddingLeft:wp('4%')}}>
-//               <Icon name="ios-heart-empty" size={27} />
-//               </View>
-//               <View style={{flexDirection:'row',paddingLeft:wp('38%')}}>
-//               <View style={{flexDirection:'row',paddingLeft:wp('2%')}}>
-//               {this.state.clicks?<TouchableOpacity onPress={() =>this.setState({clicks: this.state.clicks - 1})}>
-//               <Icon name="ios-remove-circle" size={27} />
-//               </TouchableOpacity>:<Text></Text>}
-//               </View>
-//               <View style={{flexDirection:'row',paddingLeft:wp('2%'),paddingTop:hp('0.4%')}}>
-//               <Text> { this.state.clicks ?  this.state.clicks : '1' }</Text>
-//               </View>
-//               <TouchableOpacity onPress={() => this.handleAddChange}>
-//               <Icon name="ios-add-circle" size={27} />
-//               </TouchableOpacity>
-//               </View>
-//               </View>
-//             </Body>
-//           </ListItem>
-//           </List>     
-//         ))}
-       
-//      </View>
-//       );
-//      case 'Oil':
-//       return(
-// <Container>
-// <View>
-// <List>
-// <ListItem avatar>
-
-// <Body>
-// <Text>Oil</Text>
-// <Text note>1-Ltr</Text>
-
-// </Body>
-// </ListItem>
-// </List>
-// </View>
-// </Container>
-// )
-// //    default:
-// //    return(
-// //     <View style={{backgroundColor:'red'}}>
-// //     <Text>HI</Text>
-// //  </View>
-// //   )
-// }
-   
-  //  }
-    // handleSubmit2=event=>{
-    //   this.setState({isClicked2:true});
-   
-    // }
-    // handleSubmit3=event=>{
-    //   this.setState({isClicked3:true});
-   
-    // }
-    // handleSubmit4=event=>{
-    //   this.setState({isClicked4:true});
-   
-    // }
+   }
 
 
-  handleFocus=event=>{
+handleFocus=event=>{
     this.setState({isFocused:true});
 
     if(this.props.onFocus)
       this.props.onFocus(event)
   }
+
+// handleAddChange(prod){
+//   // const { _id,sellingprice,productname, quantity } = prod
+//   // console.log(_id,sellingprice,productname)
+//   this.props.addToCart(prod) 
+//   // cart.addItem(prod);
+// }
+
+// handleMinusChange(id){
+//   cart.removeItem(id)
+// }
+
 render() {
     const{isFocused}=this.state;
     const {onFocus}=this.props;
@@ -165,7 +84,7 @@ render() {
       
         {this.props.displayproducts.product && this.props.displayproducts.product.map((p) =>(
           <List key={p._id}>
-            <CartItem item={p} />
+            <ProdItem item={p}    />
           </List>     
         ))}
        
@@ -180,7 +99,8 @@ render() {
 const mapStateToProps = (state) => ({
   // categoryid: props.navigation.state.params.categoryid,
    displaysubcategory : state.displaysubcategory || [],
-   displayproducts : state.displayproducts || []
+   displayproducts : state.displayproducts || [],
+   refresh: state.cartDisplayReducers || false
  });
  
  

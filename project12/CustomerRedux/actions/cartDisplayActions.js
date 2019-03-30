@@ -1,36 +1,123 @@
 import axios from 'axios';
 import {AsyncStorage} from 'react-native';
-import { GET_ERRORS, ADD_TO_CART, CART_DISPLAY } from './types';
+import { GET_ERRORS, ADD_TO_CART, CART_DISPLAY, REMOVE_FROM_CART } from './types';
 
 
 
 
-export const addToCart = (product) => dispatch => {
-    console.log("I'm in addto cart redux"+ product);
-   // const userid = AsyncStorage.getItem('decoded');
-    axios.post('http://192.168.29.137:3000/api/cartitems/addtocart',product)
-    .then(res => {
-        console.log(res.data);
+export const addToCart = ({_id,sellingprice,productname, quantity}) => dispatch => {
+    
+    let cart = [],items=[];
+      
+      try{
+        let valued = []
+        let pro = {productname, sellingprice, _id, quantity}
+        
+        AsyncStorage.getItem('bsc_cart')
+        .then((resa)=>{
+          if(resa){ // if cart has items
+            console.log("step B")
+              let Res = JSON.parse(resa)
+              var total = parseFloat(sellingprice)+parseFloat(Res.total)
+              console.log("total+parseInt(Res.total) ", parseFloat(sellingprice)+parseFloat(Res.total))
+              
+              let finalArr = []
+              var notChange = true
+              var continueChange = true
+              
+                  Res.items.forEach((dim, index) => {
+                    // console.log(index)
+                    if(dim._id==_id) {
+                      notChange = false
+                      continueChange = false
+                      // console.log(index,"here")
+                      // const {_id,} = dim
+                      finalArr.push({...dim,quantity:dim.quantity+1})
+                    }
+                    if(index==Res.items.length-1 && notChange){
+                      console.log("finally")
+                      continueChange = false
+                      finalArr.push(dim)
+                      finalArr.push(pro)
+                    }
+                    if(continueChange) {
+                      console.log("continueChange")
+                      finalArr.push(dim)
+                    }
+                    // continueChange = true
+                  })
+                
+                let finalProcess=  {
+                    items: finalArr,
+                    total: total
+                }
+                console.log("finalProcess",finalProcess)
+                AsyncStorage.setItem('bsc_cart',JSON.stringify(finalProcess)) 
+                  // console.log("finalArr ", finalArr) //true is 1
+                  
+          }
+          else {
+            console.log("step A")
+            let finalProcess=  {
+                items: [pro],
+                total: sellingprice*quantity //quan=1
+            }
+            console.log("finalProcess", finalProcess)
+            AsyncStorage.setItem('bsc_cart', JSON.stringify(finalProcess)) //at first
+
+          }
         })
-    .catch(err => dispatch({
-        type : GET_ERRORS,
-        payload : err.response.data
-    })        
-    );
+      }catch(e){console.log(e)}
 };
 
 export const getCart = () => dispatch => {
-    //console.log("Sub category in redux - "+subcategoryid);
-    axios.post('http://192.168.29.137:3000/api/cartitems/getcart')
-    .then(res => {
-      //  console.log(res.data);
-        dispatch({
-        type : CART_DISPLAY,
-        payload : res.data
-    })})
-    .catch(err => dispatch({
-        type : GET_ERRORS,
-        payload : err.response.data
-    })        
-    );
-};
+
+    AsyncStorage.getItem("bsc_cart").then((out)=>{
+
+        if(out){dispatch({
+            type : CART_DISPLAY,
+            payload : JSON.parse(out)
+        })} else {
+            dispatch({ type: CART_DISPLAY, payload:undefined})
+        }
+    });
+}
+export const minusCart = (id) => dispatch => {
+
+  let cart = []
+      
+  AsyncStorage.getItem('bsc_cart').then((resa)=>{
+    var total
+    if(resa) {
+      let Res = JSON.parse(resa)
+      console.log("bsc_cart ", Res)
+      let finalArr = []
+
+          Res.items.forEach((dim, index) => {
+            console.log(index)
+            if(dim._id==id) {
+                if(dim.quantity!=1){
+                  finalArr.push({...dim,quantity:dim.quantity-1})
+                  total =  Res.total -  dim.sellingprice
+                }
+            }
+            else {
+              finalArr.push(dim)
+            }
+          })
+ 
+          let finalProcess=  {
+            items: finalArr,
+            total: total
+        }
+        console.log("finalProcess",finalProcess)
+        AsyncStorage.setItem('bsc_cart',JSON.stringify(finalProcess)) 
+    }
+    
+
+  })
+}
+export const cleanCart = () => dispatch => {
+
+  AsyncStorage.removeItem("bsc_cart")
+}

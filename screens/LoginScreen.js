@@ -1,9 +1,11 @@
 import React from 'react';
-import { View,StyleSheet, AsyncStorage } from "react-native";
-import { Input,Button,Card } from 'react-native-elements';
+import { View,StyleSheet} from "react-native";
+import { Input,Button,Card,Text } from 'react-native-elements';
 import {loginUser} from '../project12/CustomerRedux/actions/authActions';
+import {  widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen'
+
 import {connect} from 'react-redux';
- class Login extends React.Component {
+ class LoginScreen extends React.Component {
    constructor(){
      super();
      this.state = {
@@ -38,28 +40,40 @@ import {connect} from 'react-redux';
     render() {
       const { navigate } = this.props.navigation;
       return (
-        <View>
+        <View  style={{height: hp('130%'),backgroundColor:'#f2efef'}}>
+          <View style={{paddingTop:hp('25%')}}>
             <Card>
-             <View style={{flexDirection: 'row',justifyContent:'center'
-            }}>
-             <Button style={styles.Button}
-              title="Bharati Stores"
-              type="outline"/>
-             </View>
+             <Text  style={{fontWeight: 'bold',fontSize:25,textAlign:'center',paddingTop:hp('3%')}}>
+               Bharati Stores
+             </Text>
+            <View style={{flexDirection: 'column',paddingTop:hp('5%')}}>
              <Input onChangeText={mobilenumber => this.setState({ mobilenumber })}
-              placeholder='Mobile Number'/>
-
+              placeholder='Mobile Number' value={this.state.mobilenumber}/>
+             <View style={{paddingTop:hp('3%')}}>
              <Input secureTextEntry={true} onChangeText={password => this.setState({ password })}
-              placeholder='Password'/>
-             <View style={{flexDirection: 'row',justifyContent:'space-between'}}>
+              placeholder='Password' value={this.state.password}/>
+              </View>
+              </View>
+             <View style={{flexDirection: 'column',paddingTop:hp('5%')}}>
              <Button onPress={() => this.handlepress()} style={styles.Button}
               title="Login"
               type="solid"/>
-             <Button style={styles.Button}
-              title="ForgetPassword.?"
+             <View style={{paddingTop:hp('2%')}}>
+              <Button
+               title="ForgetPassword.?"
+               type="clear"/>
+              </View>
+              <View style={{paddingTop:hp('1.5%'),flexDirection:'column',display:'flex'}}>
+              <Text style={{textAlign:'center',fontWeight:'bold'}}>
+                Don't have an Account..?
+              </Text>
+             <Button onPress={() =>this.props.navigation.navigate('Registration')}
+              title="Register"
               type="clear"/>
+              </View>
              </View>
              </Card>
+             </View>
              </View>
         
       
@@ -79,4 +93,4 @@ import {connect} from 'react-redux';
   const mapStateToProps = (state) => ({
     auth : state.auth,
   });
-  export default connect(mapStateToProps, {loginUser})(Login);
+  export default connect(mapStateToProps, {loginUser})(LoginScreen);

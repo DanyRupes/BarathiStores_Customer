@@ -8,7 +8,10 @@ import {NavigationActions} from 'react-navigation';
 
 // Register new user
 export const registerUser = (userData) => dispatch => {
-    axios.post('http://192.168.1.105:3000/api/users/register', userData)
+    axios.post('http://192.168.1.105:3000/api/users/register',{headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }, userData})
     .then(res =>  navigation.navigate('login'))
     .catch(err => dispatch({
         type : GET_ERRORS,
@@ -19,7 +22,10 @@ export const registerUser = (userData) => dispatch => {
 
 // Login - get user token
 export const loginUser = (userData) => dispatch => {
-    axios.post("http://192.168.29.137:3000/api/users/login", userData)
+    axios.post("http://192.168.29.229:3000/api/users/login", userData, {headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }})
       .then(res => {
         // Save to localStorage
   // Set token to localStorage
@@ -62,7 +68,10 @@ export const setCurrentUser = decoded => {
   export const getCurrentUser = () => dispatch => {
     dispatch(setUserLoading());
     axios
-      .get("http://192.168.29.137:3000/api/user/currentuser")
+      .get("http://192.168.29.137:3000/api/user/currentuser",{headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }})
       .then(res => {
         console.log("I moved into getcurrentuser");
         dispatch({

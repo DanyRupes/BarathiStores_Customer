@@ -6,11 +6,10 @@ import { PRODUCT_DISPLAY, GET_ERRORS, CATEGORY_DISPLAY, SUBCATEGORY_DISPLAY } fr
 
 export const displayProducts = (subcategoryid) => dispatch => {
     //console.log("Sub category in redux - "+subcategoryid);
-    axios.get('http://192.168.29.137:3000/api/products/listproductonsubcategory/'+subcategoryid,{
-        headers: {
-         'Content-Type':'application/json'
-        }
-       })
+    axios.get('http://192.168.29.229:3000/api/products/listproductonsubcategory/'+subcategoryid,{headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }})
     .then(res => {
       //  console.log(res.data);
         dispatch({

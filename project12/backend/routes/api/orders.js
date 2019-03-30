@@ -45,22 +45,30 @@ router.post('/addorder', (req,res) => {
 //Admin order route
 
 router.post('/placeorder', (req,res) => {
-    var userid = mongoose.Types.ObjectId(req.body.user);
-    User.findOne(userid).then((out) => {
+    console.log("Im in place order backend/////////////////////", req.body.items)
+    //var userid = mongoose.Types.ObjectId(req.body.user);
+    console.log("req.body.totalamount", req.body.total)
+    console.log(req.user);
+    User.findOne({_id :req.user}).then((out) => {
+        console.log("varuthaa")
         console.log(out);
         if(!out) res.json("User id not found");
             console.log("///////////////////"+out.cart);
-        out.cart.product
+       // out.cart.product
         
         let neworder = new Order({
-            orders :out.cart,
-            totalamount: req.body.totalamount,
-            customer_id : userid,
+            orders :req.body.items,
+            totalamount: req.body.total,
+            customer_id : req.user,
             payment_id : "pay1"
             });
             neworder.save((err,result) => {
                 if(err)
                     return res.status(400).json(err);
+                    // User.findOneAndUpdate({"_id":req.user}, {$unset : {"cart": ""}},(err,removecart) => {
+                    //     if(err) res.json(err);
+                    //         res.json(removecart);
+                    // })
                 res.json(result);
             });
 
@@ -79,6 +87,21 @@ router.post('/placeorder', (req,res) => {
         });
 })
 
+//Update Status Values
+
+router.post('/updatestatus/:id', (req,res) => {
+    Order.findOneAndUpdate({'_id':req.params.id}, {'$set': {
+        'status': req.body.status
+    }}, (err, order) => {
+      if (err) {
+        return res.status(400).send({
+          error: errorHandler.getErrorMessage(err)
+        })
+      }
+      res.json(order)
+    })
+})
+
 //searchproduct, mobilenumber
 
 //show My orders
@@ -89,16 +112,33 @@ router.get('/myorders', (req,res) => {
     })
 })
 
-//List all orders
+// //List all orders
+// router.get('/allorders', (req,res) => {
+//     Order.find({}).sort('-created').exec((err, allorders) => {
+//         if(err) res.status(400).json(err);
+//         res.json(allorders);
+//     })
+// })
+//
+
+//Get status Values
+router.get('/getstatus', (req,res) => {
+    res.json(Order.schema.path('status').enumValues)
+})
+
 router.get('/allorders', (req,res) => {
-    Order.find({}).sort('-created').exec((err, allorders) => {
-        if(err) res.status(400).json(err);
-        res.json(allorders);
+    console.log(":::::::::::::::::::::::::::::::::::::::")
+    Order.find({}).populate('customer_id').sort('-created').exec((err, orders) => {
+        if(err) res.json(err);
+        console.log(";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;")
+       // console.log(orders.name)
+       // console.log(orders.totalamount)
+        res.json(orders)
     })
 })
 
 //list order by user
-router.get('/listorders/:id', (req,res)=> {
+router.get('/listorders/', (req,res)=> {
     Order.find(req.params.id).sort('-created').exec((err,orders) => {
         if(err)
             return res.status(400).json(err);

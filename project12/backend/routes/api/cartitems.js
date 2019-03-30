@@ -4,6 +4,7 @@ const router = express.Router();
 const Cart = require('../../models/cartitems');
 const Product = require('../../models/products');
 const User = require('../../models/users');
+const Test = require('../../models/test');
 const passport = require('../../config');
 //require('../../config/passport')(passport);
 // require('./users');
@@ -26,11 +27,12 @@ const passport = require('../../config');
 
 
 router.post('/addtocart', (req,res,next) => {
+  console.log("bodyyyyyyyyyyyyyyyyyyyyyy")
   console.log(req.body)
     // const productId = req.product_id;
     console.log("Am i a getting here");
-    console.log(JSON.stringify(req.session.user));
-    console.log(req.session.passport);
+    console.log(JSON.stringify(req.session));
+   // console.log(req.session.passport);
     if(req.isAuthenticated()){
     var userid = req.user;//mongoose.Types.ObjectId(req.body.userid);
     console.log("req.body.user is"+req.user);
@@ -71,36 +73,47 @@ router.post('/addtocart', (req,res,next) => {
                     //var newQuantity = req.body.quantity;
                    //var productid = req.params.id;//mongoose.Types.ObjectId('5c58232f9c6aab1cec1af3dc');
                    // Cart.find({user : userid,product : productid }).then(res => console.log(res)).catch(err=>console.log(err));
-                   User.findOne({"_id" : userid, "cart.product" : req.body.pid }).then((out)=>{
+                   totalamount= req.body.sp;
+                   User.findOne({"_id" : userid, "cart.items.productid" : req.body.pid }).then((out)=>{
                     console.log(out);
-
+                    //let totalamount = 0;
                     if (out===null){
-                      console.log("come herre");
-                        let products = [{
-                            product:req.body.pid,
-                            quantity : req.body.quantity,
-                            amount : req.body.amount
+                      
+
+                        let items  =[{
+                          productid:req.body.pid,
+                          productname : req.body.productname,
+                          sellingprice : req.body.sellingprice,
+                          quantity : req.body.quantity,
+                          amount : req.body.amount
+                  
                         }]
-                            User.findOneAndUpdate( {"_id":userid} ,{$addToSet : {"cart":products}},{ upsert : true}, (err, cart) => {
+                      console.log("come herre", items,userid._id);
+                            User.findOneAndUpdate( {"_id":userid},{"$addToSet" : {"cart.items":items},$set:{
+                              "cart.totalamount":totalamount
+                            }},
+                      {upsert : true},(err, cart) => {
                                 if(err)
-                                console.log(err);
+                                res.send(err);
                                      //res.status(400).json(err);
                                 res.json(cart);
                             });
                        }
                     
                     else{
+                      const updateData = {"cart.items.$.quantity": req.body.quantity, "cart.items.$.amount": req.body.amount };
+                      const updateTotal = {"cart.totalamount": totalamount}
                         console.log("Im in else");
-                        User.findOneAndUpdate({"_id" : userid, "cart.product" : req.body.pid }, {
-                            $set : {"cart.$.quantity": req.body.quantity}},(err,result) => {
+                        User.findOneAndUpdate({"_id" : userid, "cart.items.productid" : req.body.pid }, {
+                            $set : updateData , $inc : updateTotal},(err,result) => {
                                 if(err) res.json(err);
                                 res.json(result);
                             }
                             )
 
 
-                        // res.json(out);
-                        // console.log("Im in else");
+                        res.json(out);
+                        console.log("Im in else");
                     }
 
 
@@ -122,16 +135,20 @@ router.post('/addtocart', (req,res,next) => {
  });
 
 //displaycart items
-router.get('/getcart', (req,res) => {
+router.get('/getcart', (req,res,next) => {
+  console.log(JSON.stringify(req.session));
+  console.log("req.user in get cart"+req.user);
   User.findOne({_id : req.user}, (err, cart) => {
     if(err) res.status(400).json(err);
-      cart.cart.forEach((u) => {
-        Product.findOne({_id : u.product}, (err, product) => {
-          if(err) res.send("Error in cart product retrieval");
+      // cart.cart.forEach((u) => {
+      //   Product.findOne({_id : u.product}, (err, product) => {
+      //     if(err) res.send("Error in cart product retrieval");
 
-        })
-      })
-    //res.json(cart.cart);
+      //   })
+      
+      // })
+    res.json(cart.cart);
+    return next()
   })
 })
 
