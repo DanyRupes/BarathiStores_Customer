@@ -1,11 +1,12 @@
 import axios from 'axios';
 
 import { PRODUCT_DISPLAY, GET_ERRORS, CATEGORY_DISPLAY, SUBCATEGORY_DISPLAY } from './types';
+import port from '../../port'
 
 
 export const displayCategories = () => dispatch => {
     console.log("in redux category");
-    axios.get('http://192.168.29.229:3000/api/categories/listcategory',{headers: {
+    axios.get(port+'/api/categories/listcategory',{headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       }}).then(

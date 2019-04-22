@@ -3,7 +3,7 @@ const multer = require('multer');
 const Category = require('../../models/category');
 const validateCategoryInput = require('../../validation/category');
 const router = express.Router();
-const passport = require('../../config');
+//const passport = require('../../config');
 const SubCategory = require('../../models/subcategory');
 
 //Multer middleware for image upload
@@ -88,17 +88,17 @@ router.get('/omg',(req,res) => {
     console.log(req.session,"----------------------")
     res.send("ohhhh")
 })
-router.get('/listsubcategoryoncategory/:id',(req,res) => {
-    console.log(req.session,"----------------------")
-    //var productid = mongoose.Types.ObjectId('5c778e06234029258c188f20');
-    console.log('Im in list subcategory');
-    // console.log(req.session.id);
-    SubCategory.find({categoryid : req.params.id}).populate('categoryid').exec((err,subcategory)=>{
-        if(err) res.status(400).json(err);
-        // console.log(subcategory);
-        res.json(subcategory);
-    });
-})
+// router.get('/listsubcategoryoncategory/:id',(req,res) => {
+//     console.log(req.session,"----------------------")
+//     //var productid = mongoose.Types.ObjectId('5c778e06234029258c188f20');
+//     console.log('Im in list subcategory');
+//     // console.log(req.session.id);
+//     SubCategory.find({categoryid : req.params.id}).populate('categoryid').exec((err,subcategory)=>{
+//         if(err) res.status(400).json(err);
+//         // console.log(subcategory);
+//         res.json(subcategory);
+//     });
+// })
 
 //Delete Category
 router.delete('/deletecategory/:id', (req,res) => {

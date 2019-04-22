@@ -6,7 +6,7 @@ import { Container, Content, List, ListItem, Left, Body, Thumbnail,Button} from 
 import Icon from 'react-native-vector-icons/Ionicons'
 import {Card} from 'react-native-elements'
 import {  widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen'
-import {addToCart} from '../../project12/CustomerRedux/actions/cartDisplayActions';
+import {addToCart,minusCart} from '../../project12/CustomerRedux/actions/cartDisplayActions';
 import cart from '../cart-helper'
 import {connect} from 'react-redux';
 
@@ -20,16 +20,23 @@ class ProdItem extends React.Component{
         quans:0,
         cartItems : [],
         updateItem:true,
-        total_quantity : "",
+        total_quantity :'' ,
     }
     componentDidMount(){
      
+        this.props.async_cart.cart.items.map(p=>{
+            if(p._id==this.props.item._id){
+                console.log("p=====>>>>",p)
+                this.setState({quans:p.quantity})
+            }
+        })
+
     }
 
     handleAddChange = async (product) => {
       const  {_id,sellingprice,productname} = product
-      this.setState({total_quantity:this.state.total_quantity++})
-      this.props.addToCart({_id,sellingprice,productname, quantity:this.state.total_quantity});  
+      this.setState({quans:this.state.quans+1})
+      this.props.addToCart({_id,sellingprice,productname, quantity:this.state.quans});  
       
       // this.setState({quans: ++this.state.quans});
         // let val = this.state.quans
@@ -50,14 +57,13 @@ class ProdItem extends React.Component{
         // const  {_id} = p
         this.props.minusCart(id);
      
-        this.setState({total_quantity:this.state.total_quantity-1})
+        this.setState({quans:this.state.quans-1})
 
       }
 
-
-
     render(){
         const p = this.props.item
+        // console.log("async_cart", this.props.async_cart)
         return(
            <ListItem avatar>
               
@@ -105,4 +111,4 @@ const mapStateToProps = (state) => ({
    
    });
 
-export default connect(mapStateToProps, {addToCart})(ProdItem);
+export default connect(mapStateToProps, {addToCart,minusCart})(ProdItem);

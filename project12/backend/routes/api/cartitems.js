@@ -5,7 +5,7 @@ const Cart = require('../../models/cartitems');
 const Product = require('../../models/products');
 const User = require('../../models/users');
 const Test = require('../../models/test');
-const passport = require('../../config');
+//const passport = require('../../config');
 //require('../../config/passport')(passport);
 // require('./users');
 // Add items into cart

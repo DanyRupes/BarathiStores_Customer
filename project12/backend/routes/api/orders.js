@@ -87,6 +87,53 @@ router.post('/placeorder', (req,res) => {
         });
 })
 
+//Admin placing order
+router.post('/adminplaceorder', (req,res) => {
+    console.log("Im in place order backend/////////////////////", req.body.items)
+    //var userid = mongoose.Types.ObjectId(req.body.user);
+    console.log("req.body.totalamount", req.body.total)
+    console.log(req.user);
+    User.findOne({mobilenumber : req.mobilenumber},(err,out) => {
+        console.log("varuthaa")
+        console.log(out);
+        if(!out) res.json("User id not found");
+            console.log("///////////////////"+out.cart);
+            res.json("Mobile number not found")
+       // out.cart.product
+        
+        let neworder = new Order({
+            orders :req.body.items,
+            totalamount: req.body.total,
+            customer_id : out._id,
+            payment_id : "pay1"
+            });
+            neworder.save((err,result) => {
+                if(err)
+                    return res.status(400).json(err);
+                    // User.findOneAndUpdate({"_id":req.user}, {$unset : {"cart": ""}},(err,removecart) => {
+                    //     if(err) res.json(err);
+                    //         res.json(removecart);
+                    // })
+                res.json(result);
+            });
+
+            // User.findOneAndUpdate( {"mobilenumber": req.body.mobilenumber} ,{$addToSet : {
+            //     "orders" : neworder
+            // }},{ upsert : true}, (err, cart) => {
+            //     if(err)
+            //     console.log(err);
+            //          //res.status(400).json(err);
+            //     User.findOneAndUpdate({"_id":userid}, {$unset : {"cart": ""}},(err,removecart) => {
+            //         if(err) res.json(err);
+            //         res.json(removecart);
+            //     })
+            // });
+
+        });
+})
+
+
+
 //Update Status Values
 
 router.post('/updatestatus/:id', (req,res) => {

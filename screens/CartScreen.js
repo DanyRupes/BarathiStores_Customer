@@ -13,7 +13,7 @@ import {addToCart,cleanCart} from '../project12/CustomerRedux/actions/cartDispla
 
 import {placeOrder} from '../project12/CustomerRedux/actions/orderDisplayActions';
 import CartItem from './reuse/CartItem';
-import cart from './cart-helper';
+import {cart_load_getter,cart_load_setter} from './actions_control/controller';
 
 
 class CartScreen extends React.Component{
@@ -83,8 +83,23 @@ handleAddChange = async (productid, sp) => {
   }
 
   async didFocus(){
-    console.log("Did Focus")
-    this.props.getCart() 
+    // AsyncStorage.removeItem('bsc_cart_load')  //testing
+    const cart_getLoad= await cart_load_getter({'key':'bsc_cart_load'})
+    
+    if(cart_getLoad =='empty'){
+        console.log("cart_getLoad",cart_getLoad)
+        this.props.getCart() 
+    const cart_setLoad= await cart_load_setter({'key':'bsc_cart_load', 'choice':'loaded'})
+      
+    if(cart_setLoad){
+        
+      }
+     }
+     
+     else {
+       console.log("im already loaded")
+     }
+    
   // this.props.cleanCart()
   }
 
@@ -94,13 +109,11 @@ handleAddChange = async (productid, sp) => {
   
   // if(this.state.reload) return()
     render() {
-
       this.props.navigation.addListener('didFocus',payload=>{this.didFocus()}) //this.handleState()
       console.log( this.props.displaycart)
         return (
             <View style={{height:hp('86%'), backgroundColor:'#f2efef'}}>
         <ScrollView showsVerticalScrollIndicator={false}>
-
             {
               this.props.displaycart.cart?
               this.props.displaycart.cart.items.map((p,i)=>(<CartItem key={i} item={p} />)):

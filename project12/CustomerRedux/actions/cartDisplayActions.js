@@ -3,13 +3,18 @@ import {AsyncStorage} from 'react-native';
 import { GET_ERRORS, ADD_TO_CART, CART_DISPLAY, REMOVE_FROM_CART } from './types';
 
 
+import port from '../../port'
+import { cart_load_setter} from '../../../screens/actions_control/controller'
 
-
-export const addToCart = ({_id,sellingprice,productname, quantity}) => dispatch => {
+export const addToCart =  ({_id,sellingprice,productname, quantity}) =>async dispatch => {
+  let cart = [],items=[];
+  
+  try{
     
-    let cart = [],items=[];
-      
-      try{
+    const reset = await cart_load_setter({choice:'reset', key:'bsc_cart_load'})
+    if(reset){
+      console.log('reset',reset)
+    }
         let valued = []
         let pro = {productname, sellingprice, _id, quantity}
         

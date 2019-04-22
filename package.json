@@ -29,7 +29,7 @@
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
     "react-native-elements": "^1.1.0",
     "react-native-image-slideshow": "^1.0.1",
-    "react-native-paper": "^2.13.0",
+    "react-native-paper": "^2.15.2",
     "react-native-responsive-screen": "^1.2.1",
     "react-native-slideshow": "^1.0.1",
     "react-navigation": "^3.0.9",

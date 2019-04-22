@@ -4,7 +4,7 @@ import { CART_DISPLAY } from '../actions/types';
 
 
 const initialstate = {
-    cart : undefined
+    cart : {items:[]}
 };
 export default function(state = initialstate, action){
     switch(action.type){
@@ -19,7 +19,7 @@ export default function(state = initialstate, action){
                     };
                 }else {
                     console.log("REducers First -----------------------")
-                    return {cart:undefined}  
+                    return {...initialstate}  
                 } 
             default :
                 return state;

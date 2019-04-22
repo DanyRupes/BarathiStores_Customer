@@ -1,9 +1,10 @@
 import axios from 'axios';
 import {CART_DISPLAY, GET_ERRORS, ORDER_DISPLAY} from './types'
+import port from '../../port'
 
 
 export const displayOrder = () => dispatch => {
-    axios.get('http://192.168.29.229:3000/api/orders/myorder',{headers: {
+    axios.get(port+'/api/orders/myorder',{headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       }}).then(
@@ -22,7 +23,7 @@ export const displayOrder = () => dispatch => {
 
 export const placeOrder = (cart) => dispatch => {
     console.log("I'm in place order redux",cart);
-    axios.post('http://192.168.29.229:3000/api/orders/placeorder',{headers: {
+    axios.post(port+'/api/orders/placeorder',{headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },cart}).then(

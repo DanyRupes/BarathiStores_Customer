@@ -1,15 +1,23 @@
 import React from 'react';
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { Platform, StatusBar, StyleSheet, View, AsyncStorage } from 'react-native';
 import { AppLoading, Asset, Font, Icon } from 'expo';
 import AppNavigator from './navigation/AppNavigator';
 import {Provider} from 'react-redux';
 import store from './project12/CustomerRedux/store';
-
+import {cart_load_setter } from './screens/actions_control/controller'
 export default class App extends React.Component {
   state = {
     isLoadingComplete: false,
   };
 
+ async componentDidMount(){
+   const reset = await cart_load_setter({choice:'reset', key:'bsc_cart_load'})
+    // AsyncStorage.removeItem("bsc_cart") //testing
+   if(reset){
+     console.log('reset',reset)
+
+   }
+  }
   render() {
     if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
       return (

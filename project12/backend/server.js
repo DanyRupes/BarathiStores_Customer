@@ -8,11 +8,12 @@ const cors = require('cors');
 const multer = require('multer')
 const socket = require('socket.io');
 const http = require('http');
+const fs = require('fs')
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 //const FileStore = require('session-file-store')(session);
 const router = express.Router();
-
+const dotenv = require('dotenv');
 const bcrypt = require('bcrypt');
 
 //Route path
@@ -25,8 +26,8 @@ const subcategory = require('./routes/api/subcategory');
 const orders = require('./routes/api/orders');
 const preferences = require('./routes/api/preferences');
 
-// passport configure
-//const passportConfig = require('./config/passport');
+//passport configure
+const passportConfig = require('./config/passport');
 
 //Models path
 const User = require('./models/users');
@@ -34,27 +35,42 @@ const Order = require('./models/orders');
 const SubCategory = require('./models/subcategory');
 const Product = require('./models/products');
 const Category = require('./models/category');
-
+const Wish = require('./models/wishlist')
 
 //Intitalize express
 const app = express();
+//Static directory for image upload
+app.use(express.static(path.join(__dirname, 'public')));
+//app.use(express.static(path.join(__dirname,'config')));
+
+// const httpOptions = {
+//  cert :  fs.readFileSync(path.join(__dirname,'server.crt')),
+//  key :  fs.readFileSync(path.join(__dirname,'server.key'))
+// }
+
+
 const server = http.createServer(app)
 const io = socket(server);
 var MemoryStore =session.MemoryStore;
 //dB connection key
 const db = require('./config/keys').mongoURI;
 
+dotenv.config({path : '.env'});
 
-//Static directory for image upload
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(cors());
+// app.use(cors(
+//   // origin : 'http://localhost:3000/',
+//   // methods : ['GET', 'POST'],
+//   // credentials : true
+// ));
+
+
 
 // allow-cors
-// app.use(function(req,res,next){
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//   next();
-// })
+app.use(function(req,res,next){
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+})
 
 app.use(
   session({
@@ -117,8 +133,8 @@ mongoose.connect(db, { useNewUrlParser: true }, (err, database) =>{
   if(err)
       return console.error(err);
 
-  const port = 3000;
-  server.listen(port, ()=> console.log("hai port"));
+  //const port = 3000;
+  server.listen(process.env.PORT, ()=> console.log(`hai ${process.env.PORT}`));
   //app.listen(port, ()=> console.log(`Listening on port ${port}`));
 });
 
@@ -169,9 +185,45 @@ socket.on("get_product", () => {
     io.sockets.emit("display_product", product);
 });
 });
+
+//Get orders
+socket.on("get_order", () => {
+  Order.find({}).populate('customer_id').sort('-created').exec((err, orders) => {
+    if(err) res.json(err);
+    console.log(";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;")
+   // console.log(orders.name)
+   // console.log(orders.totalamount)
+    //res.json(orders)
+    io.sockets.emit("display_order", orders)
+})
+})
 });
 
+//Add wish list Customer
+router.post('/wishlist/:id', (req,res) => {
+  
+  Wish.findOne({productid:req.params.id}, (err, wish) => {
+    const newList = new Wish({
+      productid : req.params.id
+    });
+    console.log("console.log"+req.params.id)
+    if(wish != null){
+      console.log("JJJJJJJJJJ")
+      Wish.findOneAndRemove({productid:req.params.id}, (err,result) => {
+        if(err) res.status(400).json({error: "There was a problem removing your item from the wishlist"});
+        res.send("Wishlist removed successfully");
 
+      })
+    }
+    else{
+      newList
+      .save()
+      .then(list => res.json(list))
+      .catch(err => console.log(err));
+    }
+    
+  })
+})
 
 //Add new user
 router.post('/register', (req, res) => {
@@ -295,6 +347,52 @@ router.post('/addsubcategory',upload.any(), (req,res) => {
 });
 
 //
+//Admin placing order
+router.post('/adminplaceorder', (req,res) => {
+  console.log("Im in place order backend/////////////////////", req.body.items)
+  //var userid = mongoose.Types.ObjectId(req.body.user);
+  console.log("req.body.totalamount", req.body.total)
+  console.log(req.user);
+  User.findOne({mobilenumber : req.body.mobilenumber},(err,out) => {
+      console.log("varuthaa")
+      console.log(out);
+      if(!out) res.json("User id not found");
+          console.log("///////////////////"+out.cart);
+          res.json("Mobile number not found")
+     // out.cart.product
+      
+      let neworder = new Order({
+          orders :req.body.items,
+          totalamount: req.body.total,
+          customer_id : out._id,
+          payment_id : "pay1"
+          });
+          neworder.save((err,result) => {
+              if(err)
+                  return res.status(400).json(err);
+                  // User.findOneAndUpdate({"_id":req.user}, {$unset : {"cart": ""}},(err,removecart) => {
+                  //     if(err) res.json(err);
+                  //         res.json(removecart);
+                  // })
+              //res.json(result);
+              io.sockets.emit("order_added")
+          });
+
+          // User.findOneAndUpdate( {"mobilenumber": req.body.mobilenumber} ,{$addToSet : {
+          //     "orders" : neworder
+          // }},{ upsert : true}, (err, cart) => {
+          //     if(err)
+          //     console.log(err);
+          //          //res.status(400).json(err);
+          //     User.findOneAndUpdate({"_id":userid}, {$unset : {"cart": ""}},(err,removecart) => {
+          //         if(err) res.json(err);
+          //         res.json(removecart);
+          //     })
+          // });
+
+      });
+})
+
 
 const checkLogin = (req,res,next) => {
   if(!req.session.userId){
@@ -309,13 +407,16 @@ app.get('/',(req,res)=>res.send("MM"))
 // Routes
 app.use("/api/users", users);
 app.use("/api/categories",   categories);
-//app.use("/api/subcategory", subcategory);
+app.use("/api/subcategory", subcategory);
 app.use("/api/products", products);
 app.use("/api/cartitems", cartitems);
 app.use("/api/orders", orders);
 app.use('/api/preferences', preferences);
 
-
+router.get('/auth/facebook', passport.authenticate('facebook', { scope: ['email', 'public_profile'] }));
+router.get('/auth/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/api/users/login' }), (req, res) => {
+  res.redirect(req.session.returnTo || '/');
+});
 app.use('/', router);
 
 

@@ -4,11 +4,11 @@ import { AsyncStorage } from 'react-native';
 import setAuthToken from '../utils/setAuthToken';
 import { SET_CURRENT_USER, GET_CURRENT_USER, GET_ERRORS, USER_LOADING } from './types';
 import {NavigationActions} from 'react-navigation';
-
+import port from '../../port'
 
 // Register new user
 export const registerUser = (userData) => dispatch => {
-    axios.post('http://192.168.1.105:3000/api/users/register',{headers: {
+    axios.post(port+'/api/users/register',{headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     }, userData})
@@ -22,7 +22,7 @@ export const registerUser = (userData) => dispatch => {
 
 // Login - get user token
 export const loginUser = (userData) => dispatch => {
-    axios.post("http://192.168.29.229:3000/api/users/login", userData, {headers: {
+    axios.post(port+"/api/users/login", userData,{headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     }})
@@ -68,7 +68,7 @@ export const setCurrentUser = decoded => {
   export const getCurrentUser = () => dispatch => {
     dispatch(setUserLoading());
     axios
-      .get("http://192.168.29.137:3000/api/user/currentuser",{headers: {
+      .get(port+"/api/user/currentuser",{headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       }})
@@ -95,7 +95,7 @@ export const setCurrentUser = decoded => {
 
   // Log user out
 export const logoutUser = () => dispatch => {
-  axios.post("http://192.168.29.137:3000/api/users/logout")
+  axios.post(port+"/api/users/logout")
   .then(res => {
 
   // Remove token from local storage

@@ -5,8 +5,8 @@ const fs = require('fs');
 const path = require('path');
 const router = express.Router();
 const mongoose = require('mongoose');
-const passport = require('../../config');
-
+//const passport = require('../../config');
+const Wish = require('../../models/wishlist')
 
 //Multer middleware for image upload
 // Image upload middleware
@@ -88,7 +88,7 @@ router.get('/editproduct/:id', (req,res) => {
 
 //List all Products
 router.get('/listproducts', (req, res) => {
-    Product.find((err, products) => {
+    Product.find().sort('displayorder').exec((err, products) => {
         if(err)
          return res.status(400).json(err);
         res.json(products);
@@ -128,7 +128,7 @@ router.get('/searchproduct', (req,res) => {
 //   });
      
     let search = req.body.search;
-    console.log(typeof(search));
+    //console.log(typeof(search));
     Product.find({'productname' : new RegExp(req.body.search, 'i')}, (err, product) => {
         if(err) return res.status(400).json(err);
         
@@ -152,7 +152,7 @@ router.get('/listproductonsubcategory/:id', (req,res) => {
     console.log(req.session.userId);
     console.log("Product received this - "+req.params.id);
     
-    Product.find({subcategoryid : req.params.id}).populate('subcategoryid').exec((err,products)=>{
+    Product.find({subcategoryid : req.params.id}).populate('subcategoryid').sort('displayorder').exec((err,products)=>{
         if(err) res.status(400).json(err);
         res.json(products);
     });
@@ -173,5 +173,14 @@ router.delete('/deleteproduct/:id', (req, res) => {
         res.json(product);
     });
 });
+
+//Add Wishlist
+router.post('/addwishlist/:id', (req,res) => {
+    const newWish = new Wish({
+        productid : req.params.id
+    })
+
+    newWish.save().then(result => res.json(result)).catch(err => console.log(err))
+})
 
 module.exports=router;

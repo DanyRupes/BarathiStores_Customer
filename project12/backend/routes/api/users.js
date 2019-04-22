@@ -5,7 +5,7 @@ const passport = require('../../config');
 const keys = require('../../config/keys');
 const validateRegisterInput = require('../../validation/register');
 const validateLoginInput = require('../../validation/login');
-const auth = require('../../config/auth');
+//const auth = require('../../config/auth');
 const User = require('../../models/users');
 
 const router = express.Router();
@@ -73,6 +73,30 @@ router.post('/register', (req, res) => {
         //   });
     });
 });
+
+//Forget Password
+router.put('/forgetpassword', (req,res) => {
+    User.findOne({email : req.body.email}, (err,user) => {
+        if(err) res.status(400).json(err);
+        bcrypt.compare(req.body.oldpassword, user.password).then(isMatch => {
+            if(isMatch){
+                //create JWT payload
+                bcrypt.genSalt(10, (err, salt) => {
+                    bcrypt.hash(req.body.newpassword, salt, (err, hash) =>{
+                        if(err) throw err;
+                        req.body.newpassword = hash;
+                        User.findOneAndUpdate({email:user.email},{$set : req.body}, (err,newpass) => {
+                            if(err) res.status(400).json(er);
+                            res.send("Password Updated Successfully......Please login again to continue");
+                        })
+                    });
+                });
+            }else{
+                return res.status(400).json({ passwordincorrect : "Password incorrect"});
+            }
+        });
+    })
+})
 
 //Login User
  router.post('/login',(req,res,next) => {

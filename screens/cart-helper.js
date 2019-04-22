@@ -225,14 +225,14 @@ const cart = {
         AsyncStorage.setItem('bs_cart', JSON.stringify(cart))
       
     },
-    getCart() {
-      AsyncStorage.getItem('bsc_cart').then((out)=>{
-        if(!out)
-         return []
-        else
-         return JSON.parse(out)
-    })
-    },
+    // getCart() {
+    //   AsyncStorage.getItem('bsc_cart').then((out)=>{
+    //     if(!out)
+    //      return []
+    //     else
+    //      return JSON.parse(out)
+    // })
+    // },
     removeItem(id) {
       let cart = []
       

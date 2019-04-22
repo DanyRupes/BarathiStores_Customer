@@ -21,15 +21,16 @@ class CartItem extends React.Component{
     state={
         cartItems : [],
         updateItem:true,
-        total_quantity : 0,
+        total_quantity : this.props.item.quantity,
     }
     componentDidMount(){
      console.log("Cart Item------------")
     }
 
     handleAddChange = async (p) => {
+        // console.log(this.state.total_quantity++)
       const  {_id,sellingprice,productname} = p
-      this.setState({total_quantity:this.state.total_quantity++})
+      this.setState({total_quantity:1+this.state.total_quantity})
       this.props.addToCart({_id,sellingprice,productname, quantity:this.state.total_quantity});  
       
       }
@@ -81,7 +82,7 @@ class CartItem extends React.Component{
      </TouchableOpacity>:<Text></Text>}
     </View>
     <View >
-      <Text style={{paddingLeft:wp('3%'),paddingTop:hp('0.4%')}}> { p.quantity ?  p.quantity : '' }</Text>
+      <Text style={{paddingLeft:wp('3%'),paddingTop:hp('0.4%')}}> { this.state.total_quantity}</Text>
      </View>
      <TouchableOpacity onPress={() => this.handleAddChange(p)}>
      <Icon name="ios-add-circle" size={27} />

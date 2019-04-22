@@ -4,6 +4,7 @@ const SubCategory = require('../../models/subcategory');
 const validateSubCategoryInput = require('../../validation/subcategory');
 const router = express.Router();
 const passport = require('../../config/auth');
+const Product = require('../../models/products');
 
 //Multer middleware for image upload
 // Image upload middleware
@@ -82,17 +83,28 @@ router.get('/listsubcategory', (req,res) => {
 
 //List sub category based on category
 router.get('/listsubcategoryoncategory/:id',(req,res) => {
-    console.log("In subbbbbb",req.session.userId)
+    console.log("In subbbbbb----------",req.session.userId)
 
   
     //var productid = mongoose.Types.ObjectId('5c778e06234029258c188f20');
-    console.log('Im in list subcategory');
+    console.log('Im in list subcategory----------');
     // console.log(req.session.id);
    
     SubCategory.find({categoryid : req.params.id}).populate('categoryid').exec((err,subcategory)=>{
         if(err) res.status(400).json(err);
-        // console.log(subcategory);
-        res.json(subcategory);
+        console.log(subcategory[0]._id);
+        
+
+        Product.find({subcategoryid : subcategory[0]._id}).populate('subcategoryid').sort('displayorder').exec((err,pds)=>{
+            if(err) res.status(400).json(err);
+            let output = {
+                "subcategories":subcategory,
+                "products":pds
+            }
+            
+            console.log(output)
+          res.send(output);
+      });
 
     });
 })

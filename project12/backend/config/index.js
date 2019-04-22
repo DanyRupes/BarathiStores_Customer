@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 const passport = require('passport');
-const LocalStrategy = require('./passport');
+const LocalStrategy = require('./passport').local;
 const User = require('../models/users');
 //const keys = require('./keys');
-
+// const LocalStrategy = Strategy.local;
+const FacebookStrategy = require('./passport').facebook;
 
 
 //const mongoose = require('mongoose');
@@ -38,5 +39,6 @@ passport.deserializeUser(function(user, done) {
 // });
 
 passport.use('local',LocalStrategy);
+passport.use('facebook',FacebookStrategy)
 
 module.exports = passport;
