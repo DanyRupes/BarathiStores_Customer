@@ -36,7 +36,7 @@ class CartScreen extends React.Component{
 
 componentDidMount(){
   // this.setState({reload:false})
-    
+  this.props.navigation.addListener('didFocus',payload=>{this.didFocus()}) //this.handleState()
 }
 
 // placeOrder = (sp, amount) => {
@@ -109,7 +109,7 @@ handleAddChange = async (productid, sp) => {
   
   // if(this.state.reload) return()
     render() {
-      this.props.navigation.addListener('didFocus',payload=>{this.didFocus()}) //this.handleState()
+      // this.props.navigation.addListener('didFocus',payload=>{this.didFocus()}) //this.handleState()
       console.log( this.props.displaycart)
         return (
             <View style={{height:hp('86%'), backgroundColor:'#f2efef'}}>

@@ -11,10 +11,8 @@ export const addToCart =  ({_id,sellingprice,productname, quantity}) =>async dis
   
   try{
     
-    const reset = await cart_load_setter({choice:'reset', key:'bsc_cart_load'})
-    if(reset){
-      console.log('reset',reset)
-    }
+     cart_load_setter({choice:'reset', key:'bsc_cart_load'})
+  
         let valued = []
         let pro = {productname, sellingprice, _id, quantity}
         
@@ -90,6 +88,7 @@ export const getCart = () => dispatch => {
 export const minusCart = (id) => dispatch => {
 
   let cart = []
+   cart_load_setter({choice:'reset', key:'bsc_cart_load'})
       
   AsyncStorage.getItem('bsc_cart').then((resa)=>{
     var total
@@ -125,4 +124,5 @@ export const minusCart = (id) => dispatch => {
 export const cleanCart = () => dispatch => {
 
   AsyncStorage.removeItem("bsc_cart")
+  cart_load_setter({choice:'reset', key:'bsc_cart_load'})
 }
