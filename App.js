@@ -12,7 +12,7 @@ export default class App extends React.Component {
 
  async componentDidMount(){
    const reset = await cart_load_setter({choice:'reset', key:'bsc_cart_load'})
-    // AsyncStorage.removeItem("bsc_cart") //testing
+    AsyncStorage.removeItem("bsc_cart") //testing
    if(reset){
      console.log('reset',reset)
 

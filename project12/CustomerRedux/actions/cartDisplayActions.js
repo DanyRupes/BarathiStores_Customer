@@ -10,16 +10,16 @@ export const addToCart =  ({_id,sellingprice,productname, quantity}) =>async dis
   let cart = [],items=[];
   
   try{
-    
+    console.log("///",productname)
      cart_load_setter({choice:'reset', key:'bsc_cart_load'})
-  
+  console.log("...",quantity)
         let valued = []
         let pro = {productname, sellingprice, _id, quantity}
         
         AsyncStorage.getItem('bsc_cart')
         .then((resa)=>{
           if(resa){ // if cart has items
-            console.log("step B")
+            console.log("step B",resa)
               let Res = JSON.parse(resa)
               var total = parseFloat(sellingprice)+parseFloat(Res.total)
               console.log("total+parseInt(Res.total) ", parseFloat(sellingprice)+parseFloat(Res.total))
@@ -29,14 +29,18 @@ export const addToCart =  ({_id,sellingprice,productname, quantity}) =>async dis
               var continueChange = true
               
                   Res.items.forEach((dim, index) => {
-                    // console.log(index)
                     if(dim._id==_id) {
-                      notChange = false
-                      continueChange = false
-                      // console.log(index,"here")
-                      // const {_id,} = dim
+                      console.log("index")
                       finalArr.push({...dim,quantity:dim.quantity+1})
+                      // if(index==Res.items.length-1){
+                        notChange = false
+                      // }
+                          return
+                        // }
+                      
+                      // const {_id,} = dim
                     }
+                    console.log("Har ra h34______ 2344 93435 5")
                     if(index==Res.items.length-1 && notChange){
                       console.log("finally")
                       continueChange = false
@@ -100,9 +104,12 @@ export const minusCart = (id) => dispatch => {
           Res.items.forEach((dim, index) => {
             console.log(index)
             if(dim._id==id) {
-                if(dim.quantity!=1){
+                if(dim.quantity>1){
                   finalArr.push({...dim,quantity:dim.quantity-1})
                   total =  Res.total -  dim.sellingprice
+                }
+                else {
+                  total = Res.total - dim.sellingprice
                 }
             }
             else {
@@ -115,7 +122,12 @@ export const minusCart = (id) => dispatch => {
             total: total
         }
         console.log("finalProcess",finalProcess)
-        AsyncStorage.setItem('bsc_cart',JSON.stringify(finalProcess)) 
+        if(finalProcess.items.length<1){//removing cart
+          AsyncStorage.removeItem('bsc_cart')   
+          console.log("Removed cart comletely")
+        } 
+        else
+          AsyncStorage.setItem('bsc_cart',JSON.stringify(finalProcess)) 
     }
     
 

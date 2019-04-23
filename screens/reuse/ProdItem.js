@@ -2,9 +2,9 @@
 import React from 'react';
 
 import {View,StyleSheet,SafeAreaView,ScrollView,Dimensions,TouchableOpacity, Text} from "react-native";
-import { Container, Content, List, ListItem, Left, Body, Thumbnail,Button} from 'native-base';
+import { Container, Content, List, ListItem, Left, Body, Thumbnail} from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons'
-import {Card} from 'react-native-elements'
+import {Card, Button} from 'react-native-elements'
 import {  widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen'
 import {addToCart,minusCart} from '../../project12/CustomerRedux/actions/cartDisplayActions';
 import cart from '../cart-helper'
@@ -33,10 +33,11 @@ class ProdItem extends React.Component{
 
     }
 
-    handleAddChange = async (product) => {
+    handleAddChange =  (product) => {
+        // console.log("quans",++this.state.quans)
       const  {_id,sellingprice,productname} = product
+      this.props.addToCart({_id,sellingprice,productname, quantity:this.state.quans+1});  
       this.setState({quans:this.state.quans+1})
-      this.props.addToCart({_id,sellingprice,productname, quantity:this.state.quans});  
       
       // this.setState({quans: ++this.state.quans});
         // let val = this.state.quans
@@ -87,9 +88,9 @@ class ProdItem extends React.Component{
                     <View style={{flexDirection:'row',paddingLeft:wp('38%')}}>
                         <View style={{flexDirection:'row',paddingLeft:wp('2%')}}>
                             {
-                                this.state.quans>0?<TouchableOpacity onPress={() =>this.handleMinusChange(p._id)}>
-                                <Icon name="ios-remove-circle" size={27} />
-                                </TouchableOpacity>:<View/>
+                                this.state.quans>0?
+                                <Icon onPress={() =>this.handleMinusChange(p._id)} name="ios-remove-circle" size={27} />
+                                :<View/>
                             }
                         </View>
                     
@@ -97,9 +98,9 @@ class ProdItem extends React.Component{
                             <Text> {this.state.quans>0?this.state.quans:""} </Text>
                         </View>
 
-                        <TouchableOpacity onPress={() =>this.handleAddChange(p)}>
-                            <Icon name="ios-add-circle" size={27} />
-                        </TouchableOpacity>
+                     
+                            <Icon onPress={() =>this.handleAddChange(p)} name="ios-add-circle" size={27} />
+                      
                     </View>
                 </View>
               </Body>
