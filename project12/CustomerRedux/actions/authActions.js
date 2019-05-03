@@ -22,6 +22,8 @@ export const registerUser = (userData) => dispatch => {
 
 // Login - get user token
 export const loginUser = (userData) => dispatch => {
+
+    console.log(port)
     axios.post(port+"/api/users/login", userData,{headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
@@ -29,9 +31,9 @@ export const loginUser = (userData) => dispatch => {
       .then(res => {
         // Save to localStorage
   // Set token to localStorage
-        // const  token  = res.data.user.token;
+        const  token  = res.data.token;
         // console.log("/////////////////The token in frontend is : "+token)
-        // AsyncStorage.setItem("jwtToken", token);
+        AsyncStorage.setItem("jwtToken", token);
         // // Set token to Auth header
         // setAuthToken(token);
         // // Decode token to get user data
@@ -47,7 +49,7 @@ export const loginUser = (userData) => dispatch => {
         //    actions: [NavigationActions.navigate({ routeName: 'Main' })],
         //  }));
       })
-      .catch(err =>{console.log("I'm in login error");
+      .catch(err =>{console.log("I'm in login error", err);
         dispatch({
           type: GET_ERRORS,
           payload: err.response.data
@@ -73,7 +75,7 @@ export const setCurrentUser = decoded => {
         'Content-Type': 'application/json'
       }})
       .then(res => {
-        console.log("I moved into getcurrentuser");
+        // console.log("I moved into getcurrentuser");
         dispatch({
           type: GET_CURRENT_USER,
           payload: res.data

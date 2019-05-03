@@ -3,6 +3,7 @@ import authReducers from './authReducers'
 //import errorReducers from './errorReducers';
 //import userDisplayReducers from './userDisplayReducers';
 //import adminCartReducers from './adminCartReducers';
+import orderDisplayReducers from './orderDisplayReducers'
 import productDisplayReducers from './productDisplayReducers';
 import categoryDisplayReducers from './categoryDisplayReducers';
 import subCategoryDisplayReducers from './subCategoryDisplayReducers';
@@ -16,5 +17,5 @@ export default combineReducers({
     displaysubcategory : subCategoryDisplayReducers,
     displaycart : cartDisplayReducers,
   //  searchproducts : adminCartReducers
-    
+    orders : orderDisplayReducers
 });

@@ -89,11 +89,11 @@ handleAddChange = async (productid, sp) => {
     if(cart_getLoad =='empty'){
         console.log("cart_getLoad",cart_getLoad)
         this.props.getCart() 
-    const cart_setLoad= await cart_load_setter({'key':'bsc_cart_load', 'choice':'loaded'})
+        const cart_setLoad= await cart_load_setter({'key':'bsc_cart_load', 'choice':'loaded'})
       
-    if(cart_setLoad){
-        
-      }
+          if(cart_setLoad){
+              
+            }
      }
      
      else {

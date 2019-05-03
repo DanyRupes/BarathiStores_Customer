@@ -12,7 +12,7 @@ export const displaySubCategories = (categoryid) => dispatch => {
         'Content-Type': 'application/json'
       }}).then(
         res => {
-             console.log("res.data------------",res.data)
+            // console.log("res.data------------",res.data)
             dispatch({
                 type : SUBCATEGORY_DISPLAY,
                 payload : res.data

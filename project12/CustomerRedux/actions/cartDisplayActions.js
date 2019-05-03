@@ -4,22 +4,20 @@ import { GET_ERRORS, ADD_TO_CART, CART_DISPLAY, REMOVE_FROM_CART } from './types
 
 
 import port from '../../port'
-import { cart_load_setter} from '../../../screens/actions_control/controller'
 
-export const addToCart =  ({_id,sellingprice,productname, quantity}) =>async dispatch => {
-  let cart = [],items=[];
-  
-  try{
-    console.log("///",productname)
-     cart_load_setter({choice:'reset', key:'bsc_cart_load'})
-  console.log("...",quantity)
+
+export const addToCart = ({_id,sellingprice,productname, quantity}) => dispatch => {
+    
+    let cart = [],items=[];
+      
+      try{
         let valued = []
         let pro = {productname, sellingprice, _id, quantity}
         
         AsyncStorage.getItem('bsc_cart')
         .then((resa)=>{
           if(resa){ // if cart has items
-            console.log("step B",resa)
+            console.log("step B")
               let Res = JSON.parse(resa)
               var total = parseFloat(sellingprice)+parseFloat(Res.total)
               console.log("total+parseInt(Res.total) ", parseFloat(sellingprice)+parseFloat(Res.total))
@@ -29,18 +27,14 @@ export const addToCart =  ({_id,sellingprice,productname, quantity}) =>async dis
               var continueChange = true
               
                   Res.items.forEach((dim, index) => {
+                    // console.log(index)
                     if(dim._id==_id) {
-                      console.log("index")
-                      finalArr.push({...dim,quantity:dim.quantity+1})
-                      // if(index==Res.items.length-1){
-                        notChange = false
-                      // }
-                          return
-                        // }
-                      
+                      notChange = false
+                      continueChange = false
+                      // console.log(index,"here")
                       // const {_id,} = dim
+                      finalArr.push({...dim,quantity:dim.quantity+1})
                     }
-                    console.log("Har ra h34______ 2344 93435 5")
                     if(index==Res.items.length-1 && notChange){
                       console.log("finally")
                       continueChange = false
@@ -92,7 +86,6 @@ export const getCart = () => dispatch => {
 export const minusCart = (id) => dispatch => {
 
   let cart = []
-   cart_load_setter({choice:'reset', key:'bsc_cart_load'})
       
   AsyncStorage.getItem('bsc_cart').then((resa)=>{
     var total
@@ -104,12 +97,9 @@ export const minusCart = (id) => dispatch => {
           Res.items.forEach((dim, index) => {
             console.log(index)
             if(dim._id==id) {
-                if(dim.quantity>1){
+                if(dim.quantity!=1){
                   finalArr.push({...dim,quantity:dim.quantity-1})
                   total =  Res.total -  dim.sellingprice
-                }
-                else {
-                  total = Res.total - dim.sellingprice
                 }
             }
             else {
@@ -122,12 +112,7 @@ export const minusCart = (id) => dispatch => {
             total: total
         }
         console.log("finalProcess",finalProcess)
-        if(finalProcess.items.length<1){//removing cart
-          AsyncStorage.removeItem('bsc_cart')   
-          console.log("Removed cart comletely")
-        } 
-        else
-          AsyncStorage.setItem('bsc_cart',JSON.stringify(finalProcess)) 
+        AsyncStorage.setItem('bsc_cart',JSON.stringify(finalProcess)) 
     }
     
 
@@ -136,5 +121,4 @@ export const minusCart = (id) => dispatch => {
 export const cleanCart = () => dispatch => {
 
   AsyncStorage.removeItem("bsc_cart")
-  cart_load_setter({choice:'reset', key:'bsc_cart_load'})
 }

@@ -19,7 +19,7 @@ const cart = {
               AsyncStorage.removeItem('bs_process').then(()=>{
 
                 this.removeFrom({value:fromVal, item})
-
+                setTsetTsetTsetTsetTsetTsesetTsetTtT
                 let finalProcess = []
                 if(bs_process){
                   let Res = JSON.parse(bs_process)
